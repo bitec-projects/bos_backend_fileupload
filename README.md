@@ -4,6 +4,9 @@
 
 Módulo que possibilita a criação e manipulação de upload de arquivos.
 
-### História de versão
+## História de versão
 
-eduardo.bitec 27-fev-2024 - Publicando primeira versão do módulo Fileupload, para uso na framework Bier On Stack (BOS).
+### 27-fev-2024
+
+-   eduardo.bitec - Publicando primeira versão do módulo Fileupload, para uso na framework Bier On Stack (BOS).
+-   ajustando referência para pacote bos_backend

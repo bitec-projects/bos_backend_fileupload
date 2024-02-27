@@ -3,10 +3,9 @@
 /**
  * Module dependencies
  */
-var Resource = require("bos_backend/lib/resource"),
+var Resource = require("@eduardo.bitec/bos_backend/lib/resource"),
     util = require("util"),
     path = require("path"),
-    debug = require("debug")("bos_backend_fileupload"),
     formidable = require("formidable"),
     fs = require("fs"),
     md5 = require("md5"),
@@ -108,7 +107,6 @@ Fileupload.prototype.handle = function (ctx, next) {
             if (err) return ctx.done(err);
             remainingFile--;
             if (remainingFile === 0) {
-                debug("Response sent: ", resultFiles);
                 return ctx.done(null, resultFiles);
             }
         };
@@ -116,10 +114,7 @@ Fileupload.prototype.handle = function (ctx, next) {
         // If we received params from the request
         if (typeof req.query !== "undefined") {
             for (var propertyName in req.query) {
-                debug("Query param found: { %j:%j } ", propertyName, req.query[propertyName]);
-
                 if (propertyName === "subdir") {
-                    debug("Subdir found: %j", req.query[propertyName]);
                     subdir = req.query[propertyName];
                     uploadDir = path.join(uploadDir, subdir);
                     // If the sub-directory doesn't exists, we'll create it
@@ -129,7 +124,6 @@ Fileupload.prototype.handle = function (ctx, next) {
                         fs.mkdir(uploadDir);
                     }
                 } else if (propertyName === "uniqueFilename") {
-                    debug("uniqueFilename found: %j", req.query[propertyName]);
                     uniqueFilename = req.query[propertyName] === "true";
                     continue; // skip to the next param since we don't need to store this value
                 }
@@ -149,7 +143,6 @@ Fileupload.prototype.handle = function (ctx, next) {
             file.name = uniqueFilename ? file.originalFilename : md5(Date.now()) + "." + file.originalFilename.split(".").pop();
             fs.rename(file.filepath, path.join(uploadDir, file.name), function (err) {
                 if (err) return processDone(err);
-                debug("File renamed after event.upload.run: %j", err || path.join(uploadDir, file.newFilename));
                 var storedObject = _.clone(storedProperties);
                 storedObject.filename = file.name;
                 storedObject.filesize = file.size;
@@ -166,7 +159,6 @@ Fileupload.prototype.handle = function (ctx, next) {
 
                 self.store.insert(storedObject, function (err, result) {
                     if (err) return processDone(err);
-                    debug("stored after event.upload.run %j", err || result || "none");
                     var cloneResult = _.clone(result);
                     resultFiles.push(cloneResult);
                     processDone();
@@ -176,7 +168,6 @@ Fileupload.prototype.handle = function (ctx, next) {
 
         form.parse(req)
             .on("file", function (name, file) {
-                debug("File %j received", file.originalFilename);
                 if (self.events.upload) {
                     self.events.upload.run(
                         ctx,
@@ -198,10 +189,8 @@ Fileupload.prototype.handle = function (ctx, next) {
             })
             .on("fileBegin", function (name, file) {
                 remainingFile++;
-                debug("Receiving a file: %j", file.name);
             })
             .on("error", function (err) {
-                debug("Error: %j", err);
                 return processDone(err);
             });
         return req.resume();
@@ -253,7 +242,6 @@ Fileupload.prototype.del = function (ctx, next) {
 
     this.store.find(findObj, function (err, result) {
         if (err) return ctx.done(err);
-        debug("found %j", err || result || "none");
         if (typeof result !== "undefined") {
             var subdir = "";
             if (result.subdir !== null) {
