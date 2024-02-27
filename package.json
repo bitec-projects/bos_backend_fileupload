@@ -1,7 +1,7 @@
 {
     "name": "@eduardo.bitec/bos_backend_fileupload",
     "description": "Bos Backend File Upload é um módulo para disponibilizar o recurso de upload de arquivos via coleções, compatível com Bos Backend",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": {
         "name": "Carlos Eduardo Bier"
     },

@@ -12,19 +12,17 @@ var Resource = require("@eduardo.bitec/bos_backend/lib/resource"),
     mime = require("mime"),
     _ = require("lodash"),
     env = (process.server.options && process.server.options.env) || null,
-    publicDir = "/../../public";
+    publicDir = "/public";
 
 /**
  * Module setup.
  */
 function Fileupload(options) {
     Resource.apply(this, arguments);
-
     this.store = process.server.createStore(this.name + "fileupload");
-
     if (env) {
         var dirToCheck = publicDir + "-" + env,
-            publicDirExists = fs.existsSync(__dirname + dirToCheck);
+            publicDirExists = fs.existsSync(path.dirname(require.main.filename) + dirToCheck);
         if (publicDirExists) {
             publicDir = dirToCheck;
         }
@@ -32,7 +30,7 @@ function Fileupload(options) {
 
     this.config = {
         directory: this.config.directory || "upload",
-        fullDirectory: path.join(__dirname, publicDir, this.config.directory || "upload"),
+        fullDirectory: path.join(path.dirname(require.main.filename), publicDir, this.config.directory || "upload"),
         authorization: this.config.authorization || false,
         uniqueFilename: this.config.uniqueFilename || false,
     };
